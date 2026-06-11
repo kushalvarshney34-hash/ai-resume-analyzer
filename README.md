@@ -1,59 +1,61 @@
-## AI Resume Analyzer (Next.js)
+# OmniAgent OS
 
-This is an MVP **AI Resume Analyzer** built with **Next.js 16**, **TypeScript**, and **Tailwind CSS**. It lets you upload a resume (PDF, DOCX, or TXT), sends the extracted text to an AI model, and shows strengths, weaknesses, and concrete suggestions.
+## World-Class Visual AI Agent Builder SaaS Platform
 
-### Features
+A premium, enterprise-grade visual workflow builder for creating and managing AI agents. Inspired by Linear, Vercel, Notion, Figma, Retool, and Stripe.
 
-- Upload resumes in **PDF**, **DOCX**, or **TXT** format (up to 5MB)
-- Server-side text extraction using `pdf-parse` and `mammoth`
-- AI-powered analysis via the OpenAI Node SDK
-- Clear results UI: summary badges, strengths, areas to improve, and suggestions
+### 🎯 Key Features
 
-### Getting Started
+- **Visual Workflow Builder** - Infinite canvas with drag-and-drop nodes
+- **AI Agent Management** - Support for OpenAI, Claude, Gemini, DeepSeek
+- **Execution Simulator** - Real-time workflow execution with visualization
+- **Live Token Streaming** - ChatGPT-like streaming console
+- **Analytics Dashboard** - Comprehensive metrics and insights
+- **Cost Monitoring** - Track AI usage and expenses
+- **Team Collaboration** - Comments, mentions, shared workflows
+- **Agent Marketplace** - Pre-built templates and agents
+- **Time Travel UI** - Full undo/redo system with history timeline
 
-1. **Install dependencies**
+### 🛠 Tech Stack
 
-   ```bash
-   npm install
-   ```
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS, Framer Motion
+- **State Management**: Zustand
+- **Data Fetching**: TanStack React Query
+- **Visualization**: React Flow, Recharts
+- **Database**: PostgreSQL, Prisma ORM
+- **UI Components**: Shadcn UI, Radix UI
 
-2. **Configure environment variables**
+### 📦 Getting Started
 
-   Create a `.env.local` file in the project root:
+```bash
+# Install dependencies
+npm install
 
-   ```bash
-   OPENAI_API_KEY=your_openai_api_key_here
-   # Optional, defaults to gpt-4.1-mini
-   OPENAI_MODEL=gpt-4.1-mini
-   ```
+# Setup environment
+cp .env.example .env.local
 
-3. **Run the dev server**
+# Setup database
+npx prisma db push
 
-   ```bash
-   npm run dev
-   ```
+# Run development server
+npm run dev
+```
 
-   Then open `http://localhost:3000` in your browser.
+Visit `http://localhost:3000` to see the application.
 
-### How It Works
+### 📋 Project Structure
 
-- `app/page.tsx` – Frontend upload form and results UI
-- `app/api/analyze/route.ts` – API route that:
-  - Accepts the uploaded file via `FormData`
-  - Validates size and type
-  - Extracts text using `lib/parseResume.ts`
-  - Sends text to the AI client in `lib/aiClient.ts`
-- `types/analysis.ts` – Shared TypeScript types for the analysis shape
-- `components/ResultsView.tsx` – Renders the analysis summary and lists
+- `src/app` - Next.js pages and layouts
+- `src/components` - Reusable React components
+- `src/hooks` - Custom React hooks
+- `src/stores` - Zustand state stores
+- `src/utils` - Utility functions
+- `src/types` - TypeScript type definitions
+- `src/constants` - Constants and configuration
+- `src/api` - API client functions
+- `prisma` - Database schema and migrations
 
-### Manual Testing
+### 📝 License
 
-- Try uploading:
-  - A short test resume in **TXT** format to verify basic flow
-  - A real resume in **PDF** or **DOCX** format
-- Check that:
-  - Errors appear for unsupported types or files larger than 5MB
-  - You see strengths, weaknesses, and suggestions after successful analysis
-
-Do not upload highly sensitive or confidential information; this is an educational/demo project.
-
+MIT
