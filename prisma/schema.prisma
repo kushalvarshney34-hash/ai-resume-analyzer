@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String     @id @default(cuid())
+  email                 String     @unique
+  name                  String?
+  avatar                String?
+  passwordHash          String?
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  
+  workspaces            WorkspaceUser[]
+  agents                Agent[]
+  workflows             Workflow[]
+  executions            Execution[]
+  comments              Comment[]
+  apiKeys               ApiKey[]
+  
+  @@map("users")
+}
+
+model Workspace {
+  id                    String     @id @default(cuid())
+  name                  String
+  slug                  String     @unique
+  avatar                String?
+  plan                  String     @default("free")
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  
+  users                 WorkspaceUser[]
+  agents                Agent[]
+  workflows             Workflow[]
+  executions            Execution[]
+  costs                 Cost[]
+  
+  @@map("workspaces")
+}
+
+model WorkspaceUser {
+  id                    String     @id @default(cuid())
+  workspaceId           String
+  userId                String
+  role                  String     @default("editor")
+  createdAt             DateTime   @default(now())
+  
+  workspace             Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([workspaceId, userId])
+  @@map("workspace_users")
+}
+
+model Agent {
+  id                    String     @id @default(cuid())
+  workspaceId           String
+  createdById           String
+  name                  String
+  description           String?
+  modelProvider         String
+  status                String     @default("draft")
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  
+  workspace             Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  creator               User       @relation(fields: [createdById], references: [id])
+  workflows             Workflow[]
+  executions            Execution[]
+  comments              Comment[]
+  
+  @@index([workspaceId])
+  @@map("agents")
+}
+
+model Workflow {
+  id                    String     @id @default(cuid())
+  workspaceId           String
+  agentId               String?
+  createdById           String
+  name                  String
+  description           String?
+  status                String     @default("draft")
+  nodes                 Json
+  edges                 Json
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  
+  workspace             Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  agent                 Agent?     @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  creator               User       @relation(fields: [createdById], references: [id])
+  executions            Execution[]
+  comments              Comment[]
+  
+  @@index([workspaceId])
+  @@map("workflows")
+}
+
+model Execution {
+  id                    String     @id @default(cuid())
+  workspaceId           String
+  workflowId            String
+  agentId               String?
+  createdById           String
+  status                String     @default("pending")
+  input                 Json?
+  output                Json?
+  error                 String?
+  inputTokens           Int        @default(0)
+  outputTokens          Int        @default(0)
+  cost                  Float      @default(0)
+  createdAt             DateTime   @default(now())
+  
+  workspace             Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workflow              Workflow   @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  agent                 Agent?     @relation(fields: [agentId], references: [id])
+  creator               User       @relation(fields: [createdById], references: [id])
+  
+  @@index([workspaceId])
+  @@index([workflowId])
+  @@map("executions")
+}
+
+model Cost {
+  id                    String     @id @default(cuid())
+  workspaceId           String
+  provider              String
+  inputTokens           Int
+  outputTokens          Int
+  cost                  Float
+  date                  DateTime   @default(now())
+  
+  workspace             Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  
+  @@index([workspaceId])
+  @@map("costs")
+}
+
+model Comment {
+  id                    String     @id @default(cuid())
+  workflowId            String?
+  agentId               String?
+  createdById           String
+  content               String
+  createdAt             DateTime   @default(now())
+  
+  workflow              Workflow?  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  agent                 Agent?     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  creator               User       @relation(fields: [createdById], references: [id])
+  
+  @@map("comments")
+}
+
+model ApiKey {
+  id                    String     @id @default(cuid())
+  userId                String
+  name                  String
+  key                   String     @unique
+  preview               String
+  createdAt             DateTime   @default(now())
+  
+  user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("api_keys")
+}
